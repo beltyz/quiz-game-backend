@@ -1,0 +1,7 @@
+﻿services:
+  quizgame.api:
+    image: quizgame.api
+    build:
+      context: .
+      dockerfile: QuizGame.API/Dockerfile
+
