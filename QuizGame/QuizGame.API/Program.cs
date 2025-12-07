@@ -25,6 +25,9 @@ string jwtIssuer;
 string jwtAudience;
 string jwtKey;
 
+string AdmPass;
+string AdmLogin;
+
 #if DEBUG
 DotEnv.Load();
 Console.WriteLine("EnterDev");
@@ -34,6 +37,8 @@ var user = EnvReader.GetStringValue("POSTGRES_USER");
 var password = EnvReader.GetStringValue("POSTGRES_PASSWORD");
 var db = EnvReader.GetStringValue("POSTGRES_DB");
 
+AdmLogin = EnvReader.GetStringValue("ADM_EMAIL");
+AdmPass = EnvReader.GetStringValue("ADM_PASSWORD");
 connectionString = $"Host=localhost;Port={port};Database={db};Username={user};Password={password}";
 
 // JWT LOCAL
@@ -51,6 +56,9 @@ connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Defaul
 jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
 jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
 jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+AdmLogin = Environment.GetEnvironmentVariable("ADM_EMAIL");
+AdmPass = Environment.GetEnvironmentVariable("ADM_PASSWORD");
+
 
 #endif
 
@@ -112,11 +120,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+
 var dab = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 try
 {
     dab.Database.Migrate();
     Console.WriteLine("✅ Migrations applied successfully");
+    
+    await DataSeeder.SeedRolesAndAdminAsync(services, AdmLogin, AdmPass);
+    Console.WriteLine("✅ Roles and admin seeded successfully");
 }
 catch (Exception ex)
 {

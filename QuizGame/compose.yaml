@@ -39,6 +39,9 @@ services:
       JWT_KEY: ${JWT_KEY}
       JWT_ISSUER: ${JWT_ISSUER}
       JWT_AUDIENCE: ${JWT_AUDIENCE}
+      
+      ADM_EMAIL: ${ADM_EMAIL}
+      ADM_PASSWORD: ${ADM_PASSWORD}
 
 volumes:
   postgres_data:
