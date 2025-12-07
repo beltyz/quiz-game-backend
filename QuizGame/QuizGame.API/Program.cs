@@ -24,6 +24,7 @@ string connectionString;
 string jwtIssuer;
 string jwtAudience;
 string jwtKey;
+string jwtExpiresMinutes;
 
 string AdmPass;
 string AdmLogin;
@@ -45,6 +46,7 @@ connectionString = $"Host=localhost;Port={port};Database={db};Username={user};Pa
 jwtIssuer = EnvReader.GetStringValue("JWT_ISSUER");
 jwtAudience = EnvReader.GetStringValue("JWT_AUDIENCE");
 jwtKey = EnvReader.GetStringValue("JWT_KEY");
+jwtExpiresMinutes = EnvReader.GetStringValue("JWT_EXPIRE_MINUTES");
 
 #else
 Console.WriteLine("EnterDocker");
@@ -56,6 +58,7 @@ connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Defaul
 jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
 jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
 jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+jwtExpiresMinutes = Environment.GetEnvironmentVariable("JWT_EXPIRE_MINUTES");
 AdmLogin = Environment.GetEnvironmentVariable("ADM_EMAIL");
 AdmPass = Environment.GetEnvironmentVariable("ADM_PASSWORD");
 
@@ -107,7 +110,15 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService>(sp => 
+    new AuthService(
+        sp.GetRequiredService<ApplicationDbContext>(),
+        sp.GetRequiredService<UserManager<ApplicationUser>>(),
+        jwtKey,
+        jwtIssuer,
+        jwtAudience,
+        jwtExpiresMinutes
+    ));
 builder.Services.AddScoped<IQuizService, QuizService>();
 
 // Authorization
