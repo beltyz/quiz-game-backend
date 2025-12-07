@@ -20,8 +20,12 @@ builder.Services.AddControllers();
 
 // DbContext
 builder.Configuration.AddEnvironmentVariables();
+string connectionString;
+string jwtIssuer;
+string jwtAudience;
+string jwtKey;
+
 #if DEBUG
-// Локально читаємо .env через DotEnv
 DotEnv.Load();
 Console.WriteLine("EnterDev");
 
@@ -30,19 +34,26 @@ var user = EnvReader.GetStringValue("POSTGRES_USER");
 var password = EnvReader.GetStringValue("POSTGRES_PASSWORD");
 var db = EnvReader.GetStringValue("POSTGRES_DB");
 
-Console.WriteLine($"POSTGRES_PORT: {port}");
-Console.WriteLine($"POSTGRES_USER: {user}");
-Console.WriteLine($"POSTGRES_PASSWORD: {password}");
-Console.WriteLine($"POSTGRES_DB: {db}");
+connectionString = $"Host=localhost;Port={port};Database={db};Username={user};Password={password}";
 
-// Формуємо connection string локально
-var connectionString = $"Host=localhost;Port={port};Database={db};Username={user};Password={password}";
+// JWT LOCAL
+jwtIssuer = EnvReader.GetStringValue("JWT_ISSUER");
+jwtAudience = EnvReader.GetStringValue("JWT_AUDIENCE");
+jwtKey = EnvReader.GetStringValue("JWT_KEY");
+
 #else
 Console.WriteLine("EnterDocker");
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+// Docker already injects these env vars
+connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+// JWT DOCKER
+jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+
 #endif
 
-Console.WriteLine($"connectionString: {connectionString}");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -63,6 +74,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 
 
 // Authentication + JWT
+
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -76,12 +89,13 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = EnvReader.GetStringValue("JWT_ISSUER"),
-            ValidAudience = EnvReader.GetStringValue("JWT_AUDIENCE"),
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(EnvReader.GetStringValue("JWT_KEY")))
+                Encoding.UTF8.GetBytes(jwtKey))
         };
     });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
