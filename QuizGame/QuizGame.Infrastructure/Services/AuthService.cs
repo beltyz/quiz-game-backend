@@ -35,7 +35,7 @@ public class AuthService: IAuthService
             var errors = string.Join("; ", res.Result);
             return $"Error: {errors}";
         }
-
+        await _userManager.AddToRoleAsync(user, "User");
         return "User registered successfully";
     }
 
