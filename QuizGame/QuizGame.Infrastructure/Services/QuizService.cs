@@ -141,7 +141,8 @@ public class QuizService:IQuizService
             QuizId = q.QuizId,
             QuizName = q.Name,
             QuizDescription = q.Description,
-            CreatedByName = q.User.FirstName + " " + q.User.LastName
+            CreatedByName = q.User.UserName,
+            CreatedAt = q.CreatedAt,
         }).ToList();
 
         return res;

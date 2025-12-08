@@ -6,5 +6,6 @@ public class ShortQuizInfoDTO
     public int QuizId { get; set; }
     public string QuizDescription { get; set; }
     public string CreatedByName { get; set; }
+    public DateTime CreatedAt { get; set; }
     
 }

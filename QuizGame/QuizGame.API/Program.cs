@@ -18,6 +18,16 @@ builder.Services.AddOpenApi();
 // Controllers
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Localhost3000", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // DbContext
 builder.Configuration.AddEnvironmentVariables();
 string connectionString;
@@ -154,6 +164,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("Localhost3000");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
