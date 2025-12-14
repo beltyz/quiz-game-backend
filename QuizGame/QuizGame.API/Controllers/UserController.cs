@@ -30,15 +30,15 @@ public class UserController : ControllerBase
     public async Task<IActionResult> UpdateUser([FromBody] UserDTO userInfo)
     {
         var updated = await _userService.UpdateUserInfo(userInfo, Username);
-        if (!updated) return NotFound();
+        if (!updated) return BadRequest();
         return NoContent();
     }
 
-    [HttpGet("quizzes")]
-    public async Task<IActionResult> GetAllUserQuizzes()
+    [HttpGet("quizzes/{username}")]
+    public async Task<IActionResult> GetAllUserQuizzes([FromRoute] string username)
     {
-        var res = await _userService.GetAllUsersQuiz(Username);
-        if (res == null || !res.Any()) return NotFound();
+        var res = await _userService.GetAllUsersQuiz(username);
+        if (res == null || !res.Any()) return BadRequest();
         return Ok(res);
     }
 
@@ -46,7 +46,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> DeleteUser()
     {
         var deleted = await _userService.DeleteUser(Username);
-        if (!deleted) return NotFound();
+        if (!deleted) return BadRequest();
         return NoContent();
     }
 }
