@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,24 +25,31 @@ public class QuizController:ControllerBase
     [HttpPost("add-quiz")]
     public async Task<IActionResult> AddQuiz([FromBody] QuizDTO quizDTO)
     {
-        var email = User.Identity.Name;
-        var user = await _context.Users.FirstOrDefaultAsync(e => e.Email == email);
-        if (user == null)
-            return NotFound();
+        var userId = User.FindFirstValue("id");
+        if (userId == null)
+            return Unauthorized();
         
-        var res = await _quizService.AddQuiz(quizDTO, user.Id);
+        var res = await _quizService.AddQuiz(quizDTO, userId);
         return Ok(res);
     }
     [HttpPut("update-quiz")]
     public async Task<IActionResult> UpdateQuiz([FromBody] QuizDTO quizDTO)
     {
-        var res = await _quizService.UpdateQuiz(quizDTO);
+        var userId = User.FindFirstValue("id");
+        if (userId == null)
+            return Unauthorized();
+        
+        var res = await _quizService.UpdateQuiz(quizDTO, userId);
         return Ok(res);
     }
     [HttpDelete("delete-quiz")]
     public async Task<IActionResult> DeleteQuiz([FromBody] int QuizId)
     {
-        var res = await _quizService.DeleteQuiz(QuizId);
+        var userId = User.FindFirstValue("id");
+        if (userId == null)
+            return Unauthorized();
+        
+        var res = await _quizService.DeleteQuiz(QuizId, userId);
         return Ok(res);
     }
 
