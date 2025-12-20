@@ -39,12 +39,12 @@ public class QuizService:IQuizService
     }
 
 
-   public async Task<bool> UpdateQuiz(QuizDTO quizDto)
+   public async Task<bool> UpdateQuiz(QuizDTO quizDto, string userId)
 {
     var quiz = await _context.Quizzes
         .Include(q => q.Questions)
             .ThenInclude(qs => qs.Answers)
-        .FirstOrDefaultAsync(q => q.QuizId == quizDto.QuizId);
+        .FirstOrDefaultAsync(q => q.QuizId == quizDto.QuizId && q.CreatedBy == userId);
 
     if (quiz == null)
         return false; 
@@ -114,12 +114,12 @@ public class QuizService:IQuizService
     return true;
 }
 
-    public async Task<bool> DeleteQuiz(int quizId)
+    public async Task<bool> DeleteQuiz(int quizId, string UserId)
     {
         var quiz = await _context.Quizzes
             .Include(q => q.Questions)
             .ThenInclude(qs => qs.Answers)
-            .FirstOrDefaultAsync(q => q.QuizId == quizId);
+            .FirstOrDefaultAsync(q => q.QuizId == quizId && q.CreatedBy == UserId);
 
         if (quiz == null)
             return false;
