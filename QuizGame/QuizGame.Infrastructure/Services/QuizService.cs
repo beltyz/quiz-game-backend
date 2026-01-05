@@ -164,7 +164,9 @@ public class QuizService:IQuizService
             Description = data.Description,
             CreatedAt = data.CreatedAt,
             UpdatedAt = data.UpdatedAt,
-            CreatedByName = data.User.FirstName + " " + data.User.LastName,
+            CreatedByName = data.User != null 
+                ? data.User.FirstName + " " + data.User.LastName 
+                : "Unknown",
             Questions = data.Questions.Select(q => new QuestionDTO
             {
                 QuestionId = q.QuestionId,
