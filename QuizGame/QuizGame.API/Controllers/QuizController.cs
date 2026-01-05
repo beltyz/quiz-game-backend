@@ -61,15 +61,11 @@ public class QuizController:ControllerBase
     }
 
     [HttpGet("get-quiz-by-id")]
-    public async Task<ActionResult<QuizDTO>> GetQuizById(int id)
+    public async Task<QuizDTO> GetQuizById(int id)
     {
         var res = await _quizService.GetQuiz(id);
-        if (res == null)
-            return NotFound();
-
-        return Ok(res);
+        return res;
     }
-
     
     
 }
