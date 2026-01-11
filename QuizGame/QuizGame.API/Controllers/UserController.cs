@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,9 @@ namespace QuizGame.API.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-    private string Username => User.Identity?.Name ?? throw new UnauthorizedAccessException();
-
+    private string UserId =>
+        User.FindFirstValue("id")
+        ?? throw new UnauthorizedAccessException();
     public UserController(IUserService userService)
     {
         _userService = userService;
@@ -22,14 +24,14 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUserInfo()
     {
-        var res = await _userService.GetUserInfo(Username);
+        var res = await _userService.GetUserInfo(UserId);
         return Ok(res);
     }
 
     [HttpPut]
     public async Task<IActionResult> UpdateUser([FromBody] UserDTO userInfo)
     {
-        var updated = await _userService.UpdateUserInfo(userInfo, Username);
+        var updated = await _userService.UpdateUserInfo(userInfo, UserId);
         if (!updated) return BadRequest();
         return NoContent();
     }
@@ -45,7 +47,7 @@ public class UserController : ControllerBase
     [HttpDelete]
     public async Task<IActionResult> DeleteUser()
     {
-        var deleted = await _userService.DeleteUser(Username);
+        var deleted = await _userService.DeleteUser(UserId);
         if (!deleted) return BadRequest();
         return NoContent();
     }
