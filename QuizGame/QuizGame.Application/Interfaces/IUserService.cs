@@ -8,4 +8,5 @@ public interface IUserService
     Task<bool> UpdateUserInfo(UserDTO user, string UserId);
     Task<bool> DeleteUser(string UserId);
     Task<List<ShortQuizInfoDTO>> GetAllUsersQuiz(string username);
+    Task<List<UserDTO>> GetAllUsers();
 }

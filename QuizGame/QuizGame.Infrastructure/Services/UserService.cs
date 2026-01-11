@@ -77,4 +77,17 @@ public class UserService:IUserService
             }).ToListAsync();
     }
 
+    public async Task<List<UserDTO>> GetAllUsers()
+    {
+        return await _context.Users
+            .Select(u => new UserDTO
+            {
+                UserId = u.Id,
+                Email = u.Email,
+                Username = u.UserName,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+            })
+            .ToListAsync();    
+    }
 }
