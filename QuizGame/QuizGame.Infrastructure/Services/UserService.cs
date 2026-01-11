@@ -15,10 +15,10 @@ public class UserService:IUserService
     }
 
     
-    public async Task<UserDTO?> GetUserInfo(string username)
+    public async Task<UserDTO?> GetUserInfo(string UserId)
     {
         return await _context.Users
-            .Where(u => u.UserName == username)
+            .Where(u => u.Id == UserId)
             .Select(u => new UserDTO
             {
                 UserId = u.Id,
@@ -30,9 +30,9 @@ public class UserService:IUserService
             .FirstOrDefaultAsync();
     }
 
-    public async Task<bool> UpdateUserInfo(UserDTO user, string username)
+    public async Task<bool> UpdateUserInfo(UserDTO user, string UserId)
     {
-        var existingUser = await _context.Users.FirstOrDefaultAsync(e => e.UserName == username);
+        var existingUser = await _context.Users.FirstOrDefaultAsync(e => e.Id == UserId);
 
        
         if (existingUser == null)
@@ -49,15 +49,16 @@ public class UserService:IUserService
     }
 
 
-    public async Task<bool> DeleteUser(string username)
+    public async Task<bool> DeleteUser(string UserId)
     {
         var existingUser = await _context.Users
-            .FirstOrDefaultAsync(u => u.UserName == username);
+            .FirstOrDefaultAsync(u => u.Id == UserId);
 
         if (existingUser == null)
             return false;
         
         _context.Users.Remove(existingUser);
+        await _context.SaveChangesAsync();
         return true;
     }
 
