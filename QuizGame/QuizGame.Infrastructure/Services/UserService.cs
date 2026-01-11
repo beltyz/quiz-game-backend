@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuizGame.Application.DTO;
 using QuizGame.Application.Interfaces;
@@ -13,6 +14,7 @@ public class UserService:IUserService
         _context = context;
     }
 
+    
     public async Task<UserDTO?> GetUserInfo(string username)
     {
         return await _context.Users

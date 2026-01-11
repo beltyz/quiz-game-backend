@@ -120,6 +120,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IAuthService>(sp => 
     new AuthService(
