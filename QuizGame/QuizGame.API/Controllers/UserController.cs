@@ -27,6 +27,12 @@ public class UserController : ControllerBase
         var res = await _userService.GetUserInfo(UserId);
         return Ok(res);
     }
+    [HttpGet("get-all-users-ingo")]
+    public async Task<IActionResult> GetAllUsersInfo()
+    {
+        var res = await _userService.GetAllUsers();
+        return Ok(res);
+    }
 
     [HttpPut]
     public async Task<IActionResult> UpdateUser([FromBody] UserDTO userInfo)
